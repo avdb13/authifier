@@ -6,7 +6,7 @@ use std::{ops::Deref, str::FromStr};
 use ulid::Ulid;
 
 use crate::{
-    models::{Account, Invite, MFATicket, Session},
+    models::{Account, AuthProvider, Invite, MFATicket, Session},
     Error, Result, Success,
 };
 
@@ -306,6 +306,11 @@ impl AbstractDatabase for MongoDb {
             .ok_or(Error::InvalidInvite)
     }
 
+    /// Find auth provider
+    async fn find_auth_provider(&self, id: &str) -> Result<AuthProvider> {
+        todo!()
+    }
+
     /// Find session by id
     async fn find_session(&self, id: &str) -> Result<Session> {
         self.collection("sessions")
@@ -440,6 +445,11 @@ impl AbstractDatabase for MongoDb {
                 with: "account",
             })
             .map(|_| ())
+    }
+
+    // Save account
+    async fn save_auth_provider(&self, auth_provider: &AuthProvider) -> Success {
+        todo!()
     }
 
     /// Save session

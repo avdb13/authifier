@@ -1,6 +1,5 @@
 use crate::{
-    models::{Account, Invite, MFATicket, Session},
-    Result, Success,
+    models::{Account, AuthProvider, Invite, MFATicket, Session}, Result, Success
 };
 
 use super::Migration;
@@ -31,6 +30,9 @@ pub trait AbstractDatabase: std::marker::Sync {
     /// Find invite by id
     async fn find_invite(&self, id: &str) -> Result<Invite>;
 
+    /// Find auth provider
+    async fn find_auth_provider(&self, id: &str) -> Result<AuthProvider>;
+
     /// Find session by id
     async fn find_session(&self, id: &str) -> Result<Session>;
 
@@ -48,6 +50,9 @@ pub trait AbstractDatabase: std::marker::Sync {
 
     // Save account
     async fn save_account(&self, account: &Account) -> Success;
+
+    // Save account
+    async fn save_auth_provider(&self, auth_provider: &AuthProvider) -> Success;
 
     /// Save session
     async fn save_session(&self, session: &Session) -> Success;

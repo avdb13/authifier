@@ -34,6 +34,9 @@ pub enum Error {
 
     TotpAlreadyEnabled,
     DisallowedMFAMethod,
+
+    InvalidAuthState,
+    InvalidCallback,
 }
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

@@ -2,7 +2,6 @@ mod blocklists;
 mod captcha;
 mod email_verification;
 mod ip_resolve;
-mod oauth;
 mod passwords;
 mod shield;
 
@@ -10,7 +9,6 @@ pub use blocklists::*;
 pub use captcha::*;
 pub use email_verification::*;
 pub use ip_resolve::*;
-pub use oauth::*;
 pub use passwords::*;
 pub use shield::*;
 
@@ -40,7 +38,4 @@ pub struct Config {
 
     /// Whether this application is running behind Cloudflare
     pub resolve_ip: ResolveIp,
-
-    /// OAuth settings
-    pub oauth: OAuth,
 }

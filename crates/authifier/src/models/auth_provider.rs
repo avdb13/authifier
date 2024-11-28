@@ -1,30 +1,21 @@
-use std::{
-    collections::{HashMap, HashSet},
-    ops::Deref,
-};
+use std::collections::HashMap;
 
-use rocket::http::hyper::Uri;
-use serde::{Deserialize, Deserializer};
+use reqwest::Url;
+use serde::{Deserialize as _, Deserializer};
 
-#[derive(Default, Clone)]
-pub struct OAuth(HashSet<AuthProvider>);
-
-impl Deref for OAuth {
-    type Target = HashSet<AuthProvider>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
+#[derive(Serialize, Deserialize, Clone)]
+pub struct AuthValidationData {
+    ///
+    pub ap_id: String,
+    /// A unique identifier for the request.
+    pub state: String,
+    /// The URI where the end-user will be redirected after authorization.
+    pub redirect_uri: Url,
+    /// A string to correlate the authorization request to the token request.
+    pub code_verifier: Option<String>,
 }
 
-impl<'de> Deserialize<'de> for OAuth {
-    fn deserialize<D>(_deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        todo!()
-    }
-}
+pub type IdToken = HashMap<String, serde_json::Value>;
 
 #[derive(Deserialize, Clone)]
 pub struct AuthProvider {
@@ -32,16 +23,16 @@ pub struct AuthProvider {
 
     pub name: Option<String>,
     #[serde(deserialize_with = "deserialize_opt_uri")]
-    pub icon: Option<Uri>,
+    pub icon: Option<Url>,
     #[serde(deserialize_with = "deserialize_uri")]
-    pub issuer: Uri,
+    pub issuer: Url,
 
     #[serde(deserialize_with = "deserialize_uri")]
-    pub authorization_endpoint: Uri,
+    pub authorization_endpoint: Url,
     #[serde(deserialize_with = "deserialize_uri")]
-    pub token_endpoint: Uri,
+    pub token_endpoint: Url,
     #[serde(deserialize_with = "deserialize_uri")]
-    pub userinfo_endpoint: Uri,
+    pub userinfo_endpoint: Url,
 
     pub scopes: Vec<String>,
     pub claims: HashMap<ClaimType, String>,
@@ -55,7 +46,7 @@ pub struct AuthProvider {
     pub client_credentials: ClientCredentials,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub enum CodeChallengeMethod {
     Plain,
     S256,
@@ -84,7 +75,17 @@ pub enum ClientCredentials {
     },
 }
 
-fn deserialize_opt_uri<'de, D>(deserializer: D) -> Result<Option<Uri>, D::Error>
+impl ClientCredentials {
+    pub fn client_id(&self) -> &str {
+        match self {
+            ClientCredentials::None { client_id }
+            | ClientCredentials::ClientSecretBasic { client_id, .. }
+            | ClientCredentials::ClientSecretPost { client_id, .. } => client_id,
+        }
+    }
+}
+
+fn deserialize_opt_uri<'de, D>(deserializer: D) -> Result<Option<Url>, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -94,7 +95,7 @@ where
     opt.transpose().map_err(serde::de::Error::custom)
 }
 
-fn deserialize_uri<'de, D>(deserializer: D) -> Result<Uri, D::Error>
+fn deserialize_uri<'de, D>(deserializer: D) -> Result<Url, D::Error>
 where
     D: Deserializer<'de>,
 {
