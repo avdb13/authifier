@@ -1,5 +1,5 @@
 use crate::{
-    models::{Account, Invite, MFATicket, Session},
+    models::{Account, Callback, Invite, MFATicket, Session},
     Result, Success,
 };
 
@@ -28,6 +28,9 @@ pub trait AbstractDatabase: std::marker::Sync {
     /// Find account with active deletion token
     async fn find_account_with_deletion_token(&self, token: &str) -> Result<Account>;
 
+    /// Find callback by id
+    async fn find_callback(&self, id: &str) -> Result<Callback>;
+
     /// Find invite by id
     async fn find_invite(&self, id: &str) -> Result<Invite>;
 
@@ -49,6 +52,9 @@ pub trait AbstractDatabase: std::marker::Sync {
     // Save account
     async fn save_account(&self, account: &Account) -> Success;
 
+    // Save callback
+    async fn save_callback(&self, callback: &Callback) -> Success;
+
     /// Save session
     async fn save_session(&self, session: &Session) -> Success;
 
@@ -57,6 +63,9 @@ pub trait AbstractDatabase: std::marker::Sync {
 
     /// Save ticket
     async fn save_ticket(&self, ticket: &MFATicket) -> Success;
+
+    /// Delete callback
+    async fn delete_callback(&self, id: &str) -> Success;
 
     /// Delete session
     async fn delete_session(&self, id: &str) -> Success;
