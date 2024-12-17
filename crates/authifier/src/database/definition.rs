@@ -1,5 +1,5 @@
 use crate::{
-    models::{Account, Callback, Invite, MFATicket, Session},
+    models::{Account, Callback, Invite, MFATicket, Secret, Session},
     Result, Success,
 };
 
@@ -34,6 +34,9 @@ pub trait AbstractDatabase: std::marker::Sync {
     /// Find invite by id
     async fn find_invite(&self, id: &str) -> Result<Invite>;
 
+    /// Find secret
+    async fn find_secret(&self) -> Result<Option<Secret>>;
+
     /// Find session by id
     async fn find_session(&self, id: &str) -> Result<Session>;
 
@@ -54,6 +57,9 @@ pub trait AbstractDatabase: std::marker::Sync {
 
     // Save callback
     async fn save_callback(&self, callback: &Callback) -> Success;
+
+    // Save secret
+    async fn save_secret(&self, secret: &Secret) -> Success;
 
     /// Save session
     async fn save_session(&self, session: &Session) -> Success;
