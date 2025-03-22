@@ -1,7 +1,6 @@
 use crate::{
     models::{
-        Account, AuthFlow, Callback, DeletionInfo, EmailVerification, Invite, MFATicket,
-        PasswordAuth, Secret, Session,
+        Account, Callback, DeletionInfo, EmailVerification, Invite, MFATicket, Secret, Session,
     },
     Error, Result, Success,
 };
@@ -49,7 +48,11 @@ impl AbstractDatabase for DummyDb {
     }
 
     /// Find account by SSO ID
-    async fn find_account_by_sso_id(&self, idp_id: &str, sub_id: &str) -> Result<Option<Account>> {
+    async fn find_account_by_sso_id(
+        &self,
+        _idp_id: &str,
+        _sub_id: &str,
+    ) -> Result<Option<Account>> {
         todo!()
     }
 
@@ -73,11 +76,7 @@ impl AbstractDatabase for DummyDb {
         accounts
             .values()
             .find(|account| {
-                if let AuthFlow::Password(PasswordAuth {
-                    password_reset: Some(reset),
-                    ..
-                }) = &account.auth_flow
-                {
+                if let Some(reset) = &account.password_reset {
                     reset.token == token
                 } else {
                     false
